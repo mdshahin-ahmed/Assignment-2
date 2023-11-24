@@ -6,6 +6,12 @@ const createUserIntoDB = async (user: IUser) => {
   return result;
 };
 
+const getAllUserFromDB = async () => {
+  const result = await User.find();
+  return result;
+};
+
 export const userServices = {
   createUserIntoDB,
+  getAllUserFromDB,
 };
