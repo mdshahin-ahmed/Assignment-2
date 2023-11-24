@@ -1,8 +1,4 @@
-type ProductDetails = {
-  productName: string;
-  price: number;
-  quantity: number;
-};
+import { IProduct } from '../product/product.interface';
 
 export interface IUser {
   userId: number;
@@ -21,5 +17,5 @@ export interface IUser {
     city: string;
     country: string;
   };
-  orders?: ProductDetails[];
+  orders?: IProduct[];
 }
