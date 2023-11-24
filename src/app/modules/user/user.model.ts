@@ -26,7 +26,6 @@ const userSchema = new Schema<IUser>({
     street: { type: String, required: [true, 'Street is required'] },
     city: { type: String, required: [true, 'City is required'] },
     country: { type: String, required: [true, 'Country is required'] },
-    orders: { type: [String] },
   },
   orders: { type: [productSchema] },
 });
