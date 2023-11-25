@@ -14,11 +14,20 @@ const getAllUserFromDB = async () => {
 };
 
 const getSingleUserFromDB = async (userId: string) => {
-  const result = await User.findOne({ userId });
   if (await User.isUserExists(userId)) {
+    const result = await User.findOne({ userId }).select('-password -_id');
     return result;
   } else {
     throw new Error('User already exist');
+  }
+};
+
+const deleteUserFromDB = async (userId: string) => {
+  if (await User.isUserExists(userId)) {
+    const result = await User.deleteOne({ userId });
+    return result;
+  } else {
+    throw new Error('User not exist');
   }
 };
 
@@ -26,4 +35,5 @@ export const userServices = {
   createUserIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
+  deleteUserFromDB,
 };
