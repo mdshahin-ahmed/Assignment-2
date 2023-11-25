@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userController = void 0;
 const user_service_1 = require("./user.service");
 const user_validation_1 = require("./user.validation");
+const product_validation_1 = require("../product/product.validation");
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userData = req.body;
@@ -119,9 +120,111 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
 });
+const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.params;
+        const userData = req.body;
+        yield user_service_1.userServices.updateUserInDB(userId, userData);
+        res.status(200).json({
+            success: true,
+            message: 'User updated successfully!',
+        });
+    }
+    catch (error) {
+        res.status(404).json({
+            success: false,
+            message: 'User not found',
+            error: {
+                code: 404,
+                description: 'User not found!',
+            },
+        });
+    }
+});
+const addOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.params;
+        const product = req.body;
+        const { error, value } = product_validation_1.productSchemaValidation.validate(product);
+        if (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Please provide valid data!',
+                error: {
+                    code: 500,
+                    description: 'Failed to create order!',
+                },
+            });
+        }
+        else {
+            yield user_service_1.userServices.addOrderInDB(userId, value);
+            res.status(200).json({
+                success: true,
+                message: 'Order created successfully!',
+                data: null,
+            });
+        }
+    }
+    catch (error) {
+        res.status(404).json({
+            success: false,
+            message: 'User not found',
+            error: {
+                code: 404,
+                description: 'User not found!',
+            },
+        });
+    }
+});
+const getAllProductForSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.params;
+        const result = yield user_service_1.userServices.getAllProductForSingleUserFromDB(userId);
+        res.status(200).json({
+            success: true,
+            message: 'Order fetched successfully!',
+            data: result,
+        });
+    }
+    catch (error) {
+        res.status(404).json({
+            success: false,
+            message: 'User not found',
+            error: {
+                code: 404,
+                description: 'User not found!',
+            },
+        });
+    }
+});
+const getTotalPriceOfOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.params;
+        const result = yield user_service_1.userServices.getTotalPriceOfOrderFromDB(userId);
+        res.status(200).json({
+            success: true,
+            message: 'Total price calculated successfully',
+            data: result,
+        });
+    }
+    catch (error) {
+        res.status(404).json({
+            success: false,
+            message: 'User not found',
+            error: {
+                code: 404,
+                description: 'User not found!',
+            },
+        });
+    }
+});
 exports.userController = {
     createUser,
     getAllUser,
     getSingleUser,
     deleteUser,
+    updateUser,
+    addOrder,
+    getAllProductForSingleUser,
+    getTotalPriceOfOrder,
 };

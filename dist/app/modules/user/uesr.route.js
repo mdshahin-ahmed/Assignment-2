@@ -11,4 +11,8 @@ router.get('/', user_controller_1.userController.getAllUser);
 router.post('/', user_controller_1.userController.createUser);
 router.get('/:userId', user_controller_1.userController.getSingleUser);
 router.delete('/:userId', user_controller_1.userController.deleteUser);
+router.put('/:userId', user_controller_1.userController.updateUser);
+router.put('/:userId/orders', user_controller_1.userController.addOrder);
+router.get('/:userId/orders', user_controller_1.userController.getAllProductForSingleUser);
+router.get('/:userId/orders/total-price', user_controller_1.userController.getTotalPriceOfOrder);
 exports.userRoutes = router;

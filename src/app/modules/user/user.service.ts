@@ -16,7 +16,9 @@ const getAllUserFromDB = async () => {
 
 const getSingleUserFromDB = async (userId: string) => {
   if (await User.isUserExists(userId)) {
-    const result = await User.findOne({ userId }).select('-password -_id');
+    const result = await User.findOne({ userId }).select(
+      '-password -_id -orders',
+    );
     return result;
   } else {
     throw new Error('User already exist');
@@ -52,17 +54,21 @@ const updateUserInDB = async (userId: string, userData: IUser) => {
 };
 
 const addOrderInDB = async (userId: string, product: IProduct) => {
-  const result = await User.updateOne(
-    {
-      userId: userId,
-    },
-    {
-      $push: {
-        orders: product,
+  if (await User.isUserExists(userId)) {
+    const result = await User.updateOne(
+      {
+        userId: userId,
       },
-    },
-  );
-  return result;
+      {
+        $push: {
+          orders: product,
+        },
+      },
+    );
+    return result;
+  } else {
+    throw new Error('User not exist');
+  }
 };
 
 const getAllProductForSingleUserFromDB = async (userId: string) => {

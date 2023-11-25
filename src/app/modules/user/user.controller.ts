@@ -32,8 +32,6 @@ const createUser = async (req: Request, res: Response) => {
           isActive: result.isActive,
           hobbies: result.hobbies,
           address: result.address,
-          _id: result._id,
-          orders: result.orders,
         },
       });
     }

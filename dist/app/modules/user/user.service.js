@@ -37,9 +37,81 @@ const deleteUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function*
         throw new Error('User not exist');
     }
 });
+const updateUserInDB = (userId, userData) => __awaiter(void 0, void 0, void 0, function* () {
+    if (yield user_model_1.User.isUserExists(userId)) {
+        const result = yield user_model_1.User.updateOne({
+            userId: userId,
+        }, {
+            $set: userData,
+        }, {
+            new: true,
+            runValidators: true,
+        });
+        return result;
+    }
+    else {
+        throw new Error('User not exist');
+    }
+});
+const addOrderInDB = (userId, product) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.updateOne({
+        userId: userId,
+    }, {
+        $push: {
+            orders: product,
+        },
+    });
+    return result;
+});
+const getAllProductForSingleUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (yield user_model_1.User.isUserExists(userId)) {
+        const result = yield user_model_1.User.findOne({ userId }).select('orders -_id');
+        return result;
+    }
+    else {
+        throw new Error('User already exist');
+    }
+});
+const getTotalPriceOfOrderFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (yield user_model_1.User.isUserExists(userId)) {
+        const result = yield user_model_1.User.aggregate([
+            // stage - 1
+            {
+                $match: { userId: Number(userId) },
+            },
+            // state - 2
+            {
+                $unwind: '$orders',
+            },
+            // state - 3
+            {
+                $group: {
+                    _id: '$_id',
+                    totalPrice: {
+                        $sum: { $multiply: ['$orders.price', '$orders.quantity'] },
+                    },
+                },
+            },
+            // state - 3
+            {
+                $project: {
+                    _id: 0,
+                },
+            },
+        ]);
+        return result;
+    }
+    else {
+        throw new Error('User already exist');
+    }
+});
 exports.userServices = {
     createUserIntoDB,
     getAllUserFromDB,
     getSingleUserFromDB,
     deleteUserFromDB,
+    updateUserInDB,
+    addOrderInDB,
+    getAllProductForSingleUserFromDB,
+    getTotalPriceOfOrderFromDB,
 };
