@@ -80,18 +80,17 @@ const getAllProductForSingleUserFromDB = async (userId: string) => {
   }
 };
 
-const getTotalPriceOfOrderFromDB = async (userId: any) => {
+const getTotalPriceOfOrderFromDB = async (userId: string) => {
   if (await User.isUserExists(userId)) {
     const result = await User.aggregate([
-      // stage - 1
       {
         $match: { userId: Number(userId) },
       },
-      // state - 2
+
       {
         $unwind: '$orders',
       },
-      // state - 3
+
       {
         $group: {
           _id: '$_id',
@@ -100,7 +99,7 @@ const getTotalPriceOfOrderFromDB = async (userId: any) => {
           },
         },
       },
-      // state - 3
+
       {
         $project: {
           _id: 0,
