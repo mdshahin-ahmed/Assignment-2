@@ -1,3 +1,4 @@
+import { IProduct } from '../product/product.interface';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 
@@ -50,10 +51,25 @@ const updateUserInDB = async (userId: string, userData: IUser) => {
   }
 };
 
+const addOrderInDB = async (userId: string, product: IProduct) => {
+  const result = await User.updateOne(
+    {
+      userId: userId,
+    },
+    {
+      $push: {
+        orders: product,
+      },
+    },
+  );
+  return result;
+};
+
 export const userServices = {
   createUserIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
   deleteUserFromDB,
   updateUserInDB,
+  addOrderInDB,
 };

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { userServices } from './user.service';
 import { userSchemaValidation } from './user.validation';
+import { productSchemaValidation } from '../product/product.validation';
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -131,6 +132,64 @@ const updateUser = async (req: Request, res: Response) => {
     });
   }
 };
+const addOrder = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const product = req.body;
+
+    const { error, value } = productSchemaValidation.validate(product);
+
+    if (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Please provide valid data!',
+        error: {
+          code: 500,
+          description: 'Failed to create order!',
+        },
+      });
+    } else {
+      await userServices.addOrderInDB(userId, value);
+      res.status(200).json({
+        success: true,
+        message: 'Order created successfully!',
+        data: null,
+      });
+    }
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    });
+  }
+};
+
+// const addOrder = async (req: Request, res: Response) => {
+//   try {
+//     const { userId } = req.params;
+//     const product = req.body;
+
+//     await userServices.addOrderInDB(userId, product);
+//     res.status(200).json({
+//       success: true,
+//       message: 'Order created successfully!',
+//       data: null,
+//     });
+//   } catch (error) {
+//     res.status(404).json({
+//       success: false,
+//       message: 'User not found',
+//       error: {
+//         code: 404,
+//         description: 'User not found!',
+//       },
+//     });
+//   }
+// };
 
 export const userController = {
   createUser,
@@ -138,4 +197,5 @@ export const userController = {
   getSingleUser,
   deleteUser,
   updateUser,
+  addOrder,
 };
