@@ -22,7 +22,18 @@ const createUser = async (req: Request, res: Response) => {
       res.status(200).json({
         success: true,
         message: 'User created successfully!',
-        data: result,
+        data: {
+          userId: result.userId,
+          username: result.username,
+          fullName: result.fullName,
+          age: result.age,
+          email: result.email,
+          isActive: result.isActive,
+          hobbies: result.hobbies,
+          address: result.address,
+          _id: result._id,
+          orders: result.orders,
+        },
       });
     }
   } catch (error) {

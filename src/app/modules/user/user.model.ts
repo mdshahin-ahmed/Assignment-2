@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
 import { IUser, UserModel } from './user.interface';
-// import { productSchema } from '../product/product.model';
+import { productSchema } from '../product/product.model';
+
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 const userSchema = new Schema<IUser, UserModel>({
   userId: {
@@ -27,12 +31,21 @@ const userSchema = new Schema<IUser, UserModel>({
     city: { type: String, required: [true, 'City is required'] },
     country: { type: String, required: [true, 'Country is required'] },
   },
-  //   orders: { type: [productSchema] },
+  orders: { type: [productSchema] },
 });
 
 userSchema.statics.isUserExists = async function (userId: string) {
   const existingUser = await User.findOne({ userId });
   return existingUser;
 };
+
+userSchema.pre('save', async function (next) {
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round),
+  );
+  next();
+});
 
 export const User = model<IUser, UserModel>('User', userSchema);
