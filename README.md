@@ -20,7 +20,7 @@ npm install
 npm run build
 ```
 
-#### After build this project. You can run this project locally with this command
+#### After build this project locally. You can run this project locally with this command
 
 ```bash
 npm start
