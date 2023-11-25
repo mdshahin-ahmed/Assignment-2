@@ -10,7 +10,10 @@ app.use(cors());
 app.use('/api/users', userRoutes);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Welcome to our database');
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to our database',
+  });
 });
 
 export default app;
