@@ -12,11 +12,7 @@ const createUser = async (req: Request, res: Response) => {
     if (error) {
       res.status(500).json({
         success: false,
-        message: 'Failed to create user!',
-        error: {
-          code: 500,
-          description: 'Failed to create user!',
-        },
+        message: error.message,
       });
     } else {
       const result = await userServices.createUserIntoDB(value);
@@ -114,11 +110,19 @@ const updateUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const userData = req.body;
 
-    await userServices.updateUserInDB(userId, userData);
-    res.status(200).json({
-      success: true,
-      message: 'User updated successfully!',
-    });
+    const { error, value } = userSchemaValidation.validate(userData);
+    if (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    } else {
+      await userServices.updateUserInDB(userId, value);
+      res.status(200).json({
+        success: true,
+        message: 'User updated successfully!',
+      });
+    }
   } catch (error) {
     res.status(404).json({
       success: false,
@@ -140,11 +144,7 @@ const addOrder = async (req: Request, res: Response) => {
     if (error) {
       res.status(500).json({
         success: false,
-        message: 'Please provide valid data!',
-        error: {
-          code: 500,
-          description: 'Failed to create order!',
-        },
+        message: error.message,
       });
     } else {
       await userServices.addOrderInDB(userId, value);

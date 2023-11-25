@@ -21,7 +21,7 @@ const getAllUserFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 const getSingleUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     if (yield user_model_1.User.isUserExists(userId)) {
-        const result = yield user_model_1.User.findOne({ userId }).select('-password -_id');
+        const result = yield user_model_1.User.findOne({ userId }).select('-password -_id -orders');
         return result;
     }
     else {
@@ -54,14 +54,19 @@ const updateUserInDB = (userId, userData) => __awaiter(void 0, void 0, void 0, f
     }
 });
 const addOrderInDB = (userId, product) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_model_1.User.updateOne({
-        userId: userId,
-    }, {
-        $push: {
-            orders: product,
-        },
-    });
-    return result;
+    if (yield user_model_1.User.isUserExists(userId)) {
+        const result = yield user_model_1.User.updateOne({
+            userId: userId,
+        }, {
+            $push: {
+                orders: product,
+            },
+        });
+        return result;
+    }
+    else {
+        throw new Error('User not exist');
+    }
 });
 const getAllProductForSingleUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     if (yield user_model_1.User.isUserExists(userId)) {
@@ -75,15 +80,12 @@ const getAllProductForSingleUserFromDB = (userId) => __awaiter(void 0, void 0, v
 const getTotalPriceOfOrderFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     if (yield user_model_1.User.isUserExists(userId)) {
         const result = yield user_model_1.User.aggregate([
-            // stage - 1
             {
                 $match: { userId: Number(userId) },
             },
-            // state - 2
             {
                 $unwind: '$orders',
             },
-            // state - 3
             {
                 $group: {
                     _id: '$_id',
@@ -92,7 +94,6 @@ const getTotalPriceOfOrderFromDB = (userId) => __awaiter(void 0, void 0, void 0,
                     },
                 },
             },
-            // state - 3
             {
                 $project: {
                     _id: 0,

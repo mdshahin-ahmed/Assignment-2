@@ -20,11 +20,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (error) {
             res.status(500).json({
                 success: false,
-                message: 'Failed to create user!',
-                error: {
-                    code: 500,
-                    description: 'Failed to create user!',
-                },
+                message: error.message,
             });
         }
         else {
@@ -41,8 +37,6 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     isActive: result.isActive,
                     hobbies: result.hobbies,
                     address: result.address,
-                    _id: result._id,
-                    orders: result.orders,
                 },
             });
         }
@@ -124,11 +118,20 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const { userId } = req.params;
         const userData = req.body;
-        yield user_service_1.userServices.updateUserInDB(userId, userData);
-        res.status(200).json({
-            success: true,
-            message: 'User updated successfully!',
-        });
+        const { error, value } = user_validation_1.userSchemaValidation.validate(userData);
+        if (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        else {
+            yield user_service_1.userServices.updateUserInDB(userId, value);
+            res.status(200).json({
+                success: true,
+                message: 'User updated successfully!',
+            });
+        }
     }
     catch (error) {
         res.status(404).json({
@@ -149,11 +152,7 @@ const addOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (error) {
             res.status(500).json({
                 success: false,
-                message: 'Please provide valid data!',
-                error: {
-                    code: 500,
-                    description: 'Failed to create order!',
-                },
+                message: error.message,
             });
         }
         else {
