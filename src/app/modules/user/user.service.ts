@@ -65,6 +65,48 @@ const addOrderInDB = async (userId: string, product: IProduct) => {
   return result;
 };
 
+const getAllProductForSingleUserFromDB = async (userId: string) => {
+  if (await User.isUserExists(userId)) {
+    const result = await User.findOne({ userId }).select('orders -_id');
+    return result;
+  } else {
+    throw new Error('User already exist');
+  }
+};
+
+const getTotalPriceOfOrderFromDB = async (userId: any) => {
+  if (await User.isUserExists(userId)) {
+    const result = await User.aggregate([
+      // stage - 1
+      {
+        $match: { userId: Number(userId) },
+      },
+      // state - 2
+      {
+        $unwind: '$orders',
+      },
+      // state - 3
+      {
+        $group: {
+          _id: '$_id',
+          totalPrice: {
+            $sum: { $multiply: ['$orders.price', '$orders.quantity'] },
+          },
+        },
+      },
+      // state - 3
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ]);
+    return result;
+  } else {
+    throw new Error('User already exist');
+  }
+};
+
 export const userServices = {
   createUserIntoDB,
   getAllUserFromDB,
@@ -72,4 +114,6 @@ export const userServices = {
   deleteUserFromDB,
   updateUserInDB,
   addOrderInDB,
+  getAllProductForSingleUserFromDB,
+  getTotalPriceOfOrderFromDB,
 };
