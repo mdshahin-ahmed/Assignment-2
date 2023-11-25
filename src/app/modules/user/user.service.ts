@@ -7,12 +7,19 @@ const createUserIntoDB = async (user: IUser) => {
 };
 
 const getAllUserFromDB = async () => {
-  const result = await User.find();
+  const result = await User.find().select(
+    'username fullName age email address -_id',
+  );
   return result;
 };
+
 const getSingleUserFromDB = async (userId: string) => {
   const result = await User.findOne({ userId });
-  return result;
+  if (await User.isUserExists(userId)) {
+    return result;
+  } else {
+    throw new Error('User already exist');
+  }
 };
 
 export const userServices = {
