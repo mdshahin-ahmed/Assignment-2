@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { IUser } from './user.interface';
-import { productSchema } from '../product/product.model';
+// import { productSchema } from '../product/product.model';
 
 const userSchema = new Schema<IUser>({
   userId: {
@@ -27,7 +27,7 @@ const userSchema = new Schema<IUser>({
     city: { type: String, required: [true, 'City is required'] },
     country: { type: String, required: [true, 'Country is required'] },
   },
-  orders: { type: [productSchema] },
+  //   orders: { type: [productSchema] },
 });
 
 export const User = model<IUser>('User', userSchema);
