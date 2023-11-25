@@ -41,6 +41,8 @@ userSchema.statics.isUserExists = async function (userId: string) {
 
 userSchema.pre('save', async function (next) {
   const user = this;
+  console.log('Inside pre');
+
   user.password = await bcrypt.hash(
     user.password,
     Number(config.bcrypt_salt_round),

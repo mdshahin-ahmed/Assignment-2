@@ -30,10 +30,30 @@ const deleteUserFromDB = async (userId: string) => {
     throw new Error('User not exist');
   }
 };
+const updateUserInDB = async (userId: string, userData: IUser) => {
+  if (await User.isUserExists(userId)) {
+    const result = await User.updateOne(
+      {
+        userId: userId,
+      },
+      {
+        $set: userData,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+    return result;
+  } else {
+    throw new Error('User not exist');
+  }
+};
 
 export const userServices = {
   createUserIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
   deleteUserFromDB,
+  updateUserInDB,
 };
